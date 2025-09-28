@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tienda de Perfumes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 0 15px;
+            background: #fafafa;
+            color: #333;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .perfume-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .perfume {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 15px;
+            width: 200px;
+            background: white;
+            box-shadow: 0 0 5px #ddd;
+            text-align: center;
+        }
+        .perfume button {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #007bff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .perfume button:hover {
+            background: #0056b3;
+        }
+        #cart {
+            margin-top: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 0 5px #ddd;
+        }
+        #cart ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        #cart li {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #cart li button {
+            background: #dc3545;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        #cart li button:hover {
+            background: #a71d2a;
+        }
+        #total {
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: right;
+        }
+        #delivery {
+            margin-top: 40px;
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 0 5px #ddd;
+        }
+        #delivery form input, 
+        #delivery form textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #delivery form button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #delivery form button:hover {
+            background: #1e7e34;
+        }
+        #delivery-message {
+            margin-top: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Tienda de Perfumes</h1>
+
+<section>
+    <h2>Perfumes Disponibles</h2>
+    <div class="perfume-list">
+        <div class="perfume">
+            <h3>Jean Paul</h3>
+            <button onclick="addToCart('Jean Paul')">Agregar al carrito</button>
+        </div>
+        <div class="perfume">
+            <h3>Valentino</h3>
+            <button onclick="addToCart('Valentino')">Agregar al carrito</button>
+        </div>
+        <div class="perfume">
+            <h3>La Nuit de L'Homme</h3>
+            <button onclick="addToCart('La Nuit de L\'Homme')">Agregar al carrito</button>
+        </div>
+        <div class="perfume">
+            <h3>Versace</h3>
+            <button onclick="addToCart('Versace')">Agregar al carrito</button>
+        </div>
+        <div class="perfume">
+            <h3>One Million</h3>
+            <button onclick="addToCart('One Million')">Agregar al carrito</button>
+        </div>
+        <div class="perfume">
+            <h3>Invictus</h3>
+            <button onclick="addToCart('Invictus')">Agregar al carrito</button>
+        </div>
+        <div class="perfume">
+            <h3>Louis Vuitton</h3>
+            <button onclick="addToCart('Louis Vuitton')">Agregar al carrito</button>
+        </div>
+    </div>
+</section>
+
+<section id="cart">
+    <h2>Carrito de Compras</h2>
+    <ul id="cart-items">
+        <li>No hay productos en el carrito.</li>
+    </ul>
+    <p id="total">Total: $0 MXN</p>
+</section>
+
+<section id="delivery">
+    <h2>🚚 Información de Entrega</h2>
+    <form onsubmit="return handleDelivery(event)">
+        <label for="name">Nombre:</label><br>
+        <input type="text" id="name" required><br><br>
+
+        <label for="municipio">Municipio:</label><br>
+        <input type="text" id="municipio" required><br><br>
+
+        <label for="direccion">Dirección completa:</label><br>
+        <textarea id="direccion" rows="3" required></textarea><br><br>
+
+        <button type="submit">Enviar pedido por WhatsApp</button>
+    </form>
+
+    <p id="delivery-message"></p>
+</section>
+
+<script>
+    const cart = [];
+
+    function addToCart(perfume) {
+        cart.push(perfume);
+        updateCart();
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCart();
+    }
+
+    function updateCart() {
+        const list = document.getElementById('cart-items');
+        const totalEl = document.getElementById('total');
+        list.innerHTML = '';
+
+        if (cart.length === 0) {
+            list.innerHTML = '<li>No hay productos en el carrito.</li>';
+            totalEl.textContent = 'Total: $0 MXN';
+            return;
+        }
+
+        // Contar perfumes iguales para mostrar
+        let itemCounts = {};
+        cart.forEach(item => {
+            if (!itemCounts[item]) itemCounts[item] = 0;
+            itemCounts[item]++;
+        });
+
+        // Mostrar cada perfume con cantidad y botón quitar
+        let i = 0;
+        for (let perfume in itemCounts) {
+            let li = document.createElement('li');
+            li.textContent = `${perfume} x${itemCounts[perfume]}`;
+            let btn = document.createElement('button');
+            btn.textContent = 'Quitar uno';
+            btn.onclick = function() {
+                // quitar solo una unidad del perfume
+                let index = cart.indexOf(perfume);
+                if(index > -1) {
+                    removeFromCart(index);
+                }
+            };
+            li.appendChild(btn);
+            list.appendChild(li);
+            i++;
+        }
+
+        // Calcular total con promoción
+        let total = Math.floor(cart.length / 2) * 1500 + (cart.length % 2) * 1000;
+        totalEl.textContent = `Total: $${total} MXN`;
+    }
+
+    function handleDelivery(event) {
+        event.preventDefault();
+
+        const nombre = document.getElementById("name").value.trim();
+        const municipio = document.getElementById("municipio").value.trim().toLowerCase();
+        const direccion = document.getElementById("direccion").value.trim();
+        const mensaje = document.getElementById("delivery-message");
+
+        const municipiosPermitidos = [
+            "juchipila",
+            "apozol",
+            "jalpa",
+            "nochistlán",
+            "moyahua",
+            "tabasco",
+            "teúl de gonzález ortega"
+        ];
+
+        if (!municipiosPermitidos.includes(municipio)) {
+            mensaje.style.color = "red";
+            mensaje.textContent = `❌ Lo sentimos, no realizamos entregas en "${municipio}".`;
+            return false;
+        }
+
+        if (cart.length === 0) {
+            mensaje.style.color = "red";
+            mensaje.textContent = "❌ El carrito está vacío. Por favor agrega perfumes antes de hacer el pedido.";
+            return false;
+        }
+
+        // Armar lista de perfumes
+        let itemCounts = {};
+        cart.forEach(item => {
+            if (!itemCounts[item]) itemCounts[item] = 0;
+            itemCounts[item]++;
+        });
+
+        let listaPerfumes = '';
+        for (let item in itemCounts) {
+            listaPerfumes += `• ${item} x${itemCounts[item]}\n`;
+        }
+
+        // Calcular total con promoción
+        let total = Math.floor(cart.length / 2) * 1500 + (cart.length % 2) * 1000;
+
+        // Crear mensaje
+        let texto = `Hola, quiero hacer un pedido:\n\n` +
+                    `👤 Nombre: ${nombre}\n` +
+                    `📍 Municipio: ${municipio}\n` +
+                    `🏠 Dirección: ${direccion}\n\n` +
+                    `🛍️ Perfumes:\n${listaPerfumes}\n` +
+                    `💰 Total: $${total} MXN\n\n` +
+                    `Gracias.`;
+
+        // Número de WhatsApp (sin espacios ni signos)
+        let numeroWhatsApp = "524671006630"; // <- Cambia este número por tu WhatsApp real
+
+        // Codificar el mensaje para URL
+        let mensajeCodificado = encodeURIComponent(texto);
+
+        // Abrir WhatsApp en nueva pestaña
+        let url = `https://wa.me/${numeroWhatsApp}?text=${mensajeCodificado}`;
+        window.open(url, '_blank');
+
+        mensaje.style.color = "green";
+        mensaje.textContent = `✅ Redirigiendo a WhatsApp...`;
+
+        return false;
+    }
+</script>
+
+</body>
+</html>
